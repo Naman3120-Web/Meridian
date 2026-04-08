@@ -1,0 +1,30 @@
+[
+  {
+    "id": "r1",
+    "name": "Chicken Biryani",
+    "time": "45 mins",
+    "image_url": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "ingredients": ["Chicken", "Rice", "Onion", "Yogurt", "Ghee", "Turmeric", "Cardamom"]
+  },
+  {
+    "id": "r2",
+    "name": "Paneer Tikka Masala",
+    "time": "30 mins",
+    "image_url": "https://images.unsplash.com/photo-1596797038530-2c107229654b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "ingredients": ["Paneer", "Tomato", "Onion", "Garlic", "Butter", "Chili"]
+  },
+  {
+    "id": "r3",
+    "name": "Breakfast Omelette",
+    "time": "10 mins",
+    "image_url": "https://images.unsplash.com/photo-1510693060424-df35be48cb15?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "ingredients": ["Eggs", "Milk", "Butter", "Salt", "Cheese", "Bread"]
+  },
+  {
+    "id": "r4",
+    "name": "Chana Masala",
+    "time": "25 mins",
+    "image_url": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    "ingredients": ["Chickpeas", "Tomato", "Onion", "Ginger", "Garlic", "Coriander", "Cumin"]
+  }
+]

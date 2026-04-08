@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Global products that apply everywhere (acts as a standard dictionary)
+model MasterProduct {
+  id                  String   @id @default(uuid())
+  name                String
+  brand               String?
+  category            String
+  image_url           String?
+  barcode             String?  @unique
+  // SQLite doesn't support arrays, so we store these as JSON strings: '["doodh", "dudh"]'
+  hindi_names         String   @default("[]")
+  common_misspellings String   @default("[]")
+  
+  products            Product[] // A master product can exist in many physical stores
+}
+
+// A physical store
+model Store {
+  id               String   @id @default(uuid())
+  name             String
+  address          String
+  category         String
+  entrance_gps_lat Float
+  entrance_gps_lng Float
+  created_at       DateTime @default(now())
+
+  products         Product[]
+  inventory        Inventory[]
+  customers        Customer[]
+  store_maps       StoreMap[]
+  saved_lists      SavedList[]
+  apriori_caches   AprioriCache[]
+}
+
+// The physical map coordinates of the store for indoor navigation
+model StoreMap {
+  id                     String   @id @default(uuid())
+  store_id               String
+  map_json               String   // full grid layout drawn by shopkeeper
+  aisle_coordinates_json String   // aisle boundary boxes
+  walkable_paths_json    String   // valid movement corridors
+  updated_at             DateTime @updatedAt
+
+  store                  Store    @relation(fields: [store_id], references: [id])
+}
+
+// A specific product sitting on a shelf in a specific store
+model Product {
+  id                String   @id @default(uuid())
+  store_id          String
+  master_product_id String
+  price             Float
+  aisle             Int
+  shelf_x           Float    // x coordinate on store map (for Virtual Anchors)
+  shelf_y           Float    // y coordinate on store map (for Virtual Anchors)
+  created_at        DateTime @default(now())
+
+  store             Store         @relation(fields: [store_id], references: [id])
+  master_product    MasterProduct @relation(fields: [master_product_id], references: [id])
+  inventory         Inventory?    
+}
+
+// How many items are left on the shelf
+model Inventory {
+  id          String   @id @default(uuid())
+  store_id    String
+  product_id  String   @unique
+  stock_level Int
+  updated_at  DateTime @updatedAt
+
+  store       Store    @relation(fields: [store_id], references: [id])
+  product     Product  @relation(fields: [product_id], references: [id])
+}
+
+// The user running the app
+model Customer {
+  id                 String   @id @default(uuid())
+  store_id           String
+  name               String
+  phone              String   @unique
+  email              String   @unique
+  password_hash      String
+  step_length_meters Float    @default(0.75) // calibrated personal stride for Dead Reckoning
+  created_at         DateTime @default(now())
+
+  store              Store    @relation(fields: [store_id], references: [id])
+  saved_lists        SavedList[]
+  unrecognized_terms UnrecognizedTerm[]
+}
+
+// Shopping list created by customer
+model SavedList {
+  id          String   @id @default(uuid())
+  customer_id String
+  store_id    String
+  name        String
+  list_json   String   // [{ product_id, quantity, resolved }]
+  created_at  DateTime @default(now())
+
+  customer    Customer @relation(fields: [customer_id], references: [id])
+  store       Store    @relation(fields: [store_id], references: [id])
+}
+
+// Items the app couldn't automatically parse
+model UnrecognizedTerm {
+  id                  String   @id @default(uuid())
+  customer_id         String
+  raw_term            String   // what customer typed (e.g. "strwbery")
+  resolved_product_id String?  // what they manually picked
+  created_at          DateTime @default(now())
+
+  customer            Customer @relation(fields: [customer_id], references: [id])
+}
+
+// Cached machine learning association rules (e.g., milk -> butter)
+model AprioriCache {
+  id           String   @id @default(uuid())
+  store_id     String
+  rules_json   String
+  generated_at DateTime @default(now())
+
+  store        Store    @relation(fields: [store_id], references: [id])
+}

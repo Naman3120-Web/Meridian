@@ -24,9 +24,14 @@ app.use('/api/navigation', require('./navigation/navigation.routes'));
 app.use('/api/suggestions', require('./suggestions/suggestions.routes'));
 app.use('/api/meal', require('./meal/meal.routes'));
 
+
 // ─── Health Check ───────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.get("/", (req, res) => {
+  res.send("hello homepage");
 });
 
 // ─── Error Handler ──────────────────────────────────────────
