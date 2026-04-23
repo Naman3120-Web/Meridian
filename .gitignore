@@ -28,5 +28,5 @@ Thumbs.db
 npm-debug.log*
 
 
-.IMPLEMENTATION_PLAN.md
-.QUERIES.md
+IMPLEMENTATION_PLAN.md
+QUERIES.md
