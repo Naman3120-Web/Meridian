@@ -1,0 +1,24 @@
+<svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <!-- Full background for maskable icon -->
+  <rect width="192" height="192" fill="#0f172a"/>
+  
+  <!-- Safe zone indicator (66% inner area) -->
+  <!-- For a 192x192, safe zone is roughly 64px margin -->
+  
+  <!-- Gradient for compass -->
+  <defs>
+    <linearGradient id="maskGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Large compass circle centered in safe zone -->
+  <circle cx="96" cy="96" r="65" fill="url(#maskGrad)"/>
+  
+  <!-- North arrow pointing up (prominent) -->
+  <path d="M 96 45 L 75 80 L 96 68 L 117 80 Z" fill="#fbbf24" stroke="white" stroke-width="2"/>
+  
+  <!-- Center dot -->
+  <circle cx="96" cy="96" r="12" fill="white"/>
+</svg>
