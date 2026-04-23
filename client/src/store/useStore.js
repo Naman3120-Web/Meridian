@@ -12,7 +12,12 @@ const useStore = create(
 
       // Actions
       setAuth: (token, user) =>
-        set({ token, user, isCalibrated: user?.step_length !== 0.75 }),
+        set({
+          token,
+          user,
+          storeId: user?.store_id || null,
+          isCalibrated: user?.step_length !== 0.75,
+        }),
       logout: () => set({ token: null, user: null, isCalibrated: false }),
       setCalibration: (step_length) =>
         set((state) => ({

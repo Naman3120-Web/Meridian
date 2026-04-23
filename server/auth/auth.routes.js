@@ -22,10 +22,21 @@ router.post("/register", async (req, res) => {
     const saltRounds = 10;
     const password_hash = await bcrypt.hash(password, saltRounds);
 
-    // 3. Save the new customer (store_id can safely be null/undefined now)
+    // 2.5 Grab a default store if none is provided
+    let final_store_id = store_id;
+    if (
+      !final_store_id ||
+      final_store_id === "null" ||
+      final_store_id === "undefined"
+    ) {
+      const demoStore = await prisma.store.findFirst();
+      final_store_id = demoStore ? demoStore.id : null;
+    }
+
+    // 3. Save the new customer
     const customer = await prisma.customer.create({
       data: {
-        store_id: store_id || null, // If frontend sends nothing, default to null
+        store_id: final_store_id, // Assigned to our first database store!
         name,
         phone,
         email,
@@ -48,6 +59,7 @@ router.post("/register", async (req, res) => {
         id: customer.id,
         name: customer.name,
         step_length: customer.step_length_meters,
+        store_id: customer.store_id,
       },
     });
   } catch (error) {
@@ -87,6 +99,7 @@ router.post("/login", async (req, res) => {
         id: customer.id,
         name: customer.name,
         step_length: customer.step_length_meters,
+        store_id: customer.store_id,
       },
     });
   } catch (error) {
