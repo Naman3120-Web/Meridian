@@ -10,24 +10,7 @@ router.post("/register", async (req, res) => {
   try {
     const { store_id, name, phone, email, password } = req.body;
 
-    // ✨ NEW: 1. Ensure store_id was provided in the request body
-    if (!store_id) {
-      return res
-        .status(400)
-        .json({ error: "store_id is required to register a customer." });
-    }
-
-    // ✨ NEW: 2. Verify the store actually exists in the database
-    const storeExists = await prisma.store.findUnique({
-      where: { id: store_id },
-    });
-    if (!storeExists) {
-      return res.status(400).json({
-        error: `Invalid store_id: No store found with ID '${store_id}'. Please create a store first.`,
-      });
-    }
-
-    // 3. Check if email or phone already exists
+    // 1. Check if email or phone already exists
     const existingCustomer = await prisma.customer.findFirst({
       where: { OR: [{ email }, { phone }] },
     });
@@ -35,14 +18,14 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "Email or phone already in use" });
     }
 
-    // 4. Hash the password (salts it 10 times making it extremely secure)
+    // 2. Hash the password
     const saltRounds = 10;
     const password_hash = await bcrypt.hash(password, saltRounds);
 
-    // 5. Save the new customer in the database via Prisma
+    // 3. Save the new customer (store_id can safely be null/undefined now)
     const customer = await prisma.customer.create({
       data: {
-        store_id, // We now know this is a 100% valid, existing store ID
+        store_id: store_id || null, // If frontend sends nothing, default to null
         name,
         phone,
         email,
@@ -50,14 +33,14 @@ router.post("/register", async (req, res) => {
       },
     });
 
-    // 6. Create their JWT ID card
+    // 4. Create their JWT token
     const token = jwt.sign(
       { customerId: customer.id, storeId: customer.store_id },
       process.env.JWT_SECRET,
-      { expiresIn: "30d" }, // Keep them logged in for 30 days
+      { expiresIn: "30d" },
     );
 
-    // 7. Send back success and the token!
+    // 5. Send back success!
     res.status(201).json({
       message: "Registration successful",
       token,

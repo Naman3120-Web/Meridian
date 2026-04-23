@@ -7,7 +7,7 @@ const useStore = create(
       // Auth / User State
       token: null,
       user: null, // { id, name, step_length }
-      storeId: "da0af12c-f31e-4ba5-846a-92d0e154e08a", // Default store for demo (from seed)
+      storeId: null, // Default store for demo (from seed)
       isCalibrated: false,
 
       // Actions

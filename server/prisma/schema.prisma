@@ -43,13 +43,14 @@ model Store {
 // The physical map coordinates of the store for indoor navigation
 model StoreMap {
   id                     String   @id @default(uuid())
-  store_id               String
+  store_id               String?  // Made optional
   map_json               String   // full grid layout drawn by shopkeeper
   aisle_coordinates_json String   // aisle boundary boxes
   walkable_paths_json    String   // valid movement corridors
   updated_at             DateTime @updatedAt
 
-  store                  Store    @relation(fields: [store_id], references: [id])
+  // Fixed the P1012 error here by adding the question mark to Store?
+  store                  Store?   @relation(fields: [store_id], references: [id])
 }
 
 // A specific product sitting on a shelf in a specific store
@@ -65,7 +66,7 @@ model Product {
 
   store             Store         @relation(fields: [store_id], references: [id])
   master_product    MasterProduct @relation(fields: [master_product_id], references: [id])
-  inventory         Inventory?    
+  inventory         Inventory?  
 }
 
 // How many items are left on the shelf
@@ -83,7 +84,7 @@ model Inventory {
 // The user running the app
 model Customer {
   id                 String   @id @default(uuid())
-  store_id           String
+  store_id           String?  // Made optional so registration works without a store
   name               String
   phone              String   @unique
   email              String   @unique
@@ -91,7 +92,8 @@ model Customer {
   step_length_meters Float    @default(0.75) // calibrated personal stride for Dead Reckoning
   created_at         DateTime @default(now())
 
-  store              Store    @relation(fields: [store_id], references: [id])
+  // Added the question mark here as well
+  store              Store?   @relation(fields: [store_id], references: [id])
   saved_lists        SavedList[]
   unrecognized_terms UnrecognizedTerm[]
 }
